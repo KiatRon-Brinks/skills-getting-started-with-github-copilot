@@ -21,62 +21,6 @@ app.mount("/static", StaticFiles(directory=os.path.join(Path(__file__).parent,
 
 # In-memory activity database
 activities = {
-    _database = {
-        "Chess Club": {
-            "description": "Learn strategies and compete in chess tournaments",
-            "schedule": "Fridays, 3:30 PM - 5:00 PM",
-            "max_participants": 12,
-            "participants": ["michael@mergington.edu", "daniel@mergington.edu"]
-        },
-        "Programming Class": {
-            "description": "Learn programming fundamentals and build software projects",
-            "schedule": "Tuesdays and Thursdays, 3:30 PM - 4:30 PM",
-            "max_participants": 20,
-            "participants": ["emma@mergington.edu", "sophia@mergington.edu"]
-        },
-        "Gym Class": {
-            "description": "Physical education and sports activities",
-            "schedule": "Mondays, Wednesdays, Fridays, 2:00 PM - 3:00 PM",
-            "max_participants": 30,
-            "participants": ["john@mergington.edu", "olivia@mergington.edu"]
-        },
-        "Basketball Team": {
-            "description": "Competitive basketball team for interscholastic play",
-            "schedule": "Mondays, Wednesdays, 4:00 PM - 5:30 PM",
-            "max_participants": 15,
-            "participants": ["james@mergington.edu"]
-        },
-        "Tennis Club": {
-            "description": "Recreational and competitive tennis matches",
-            "schedule": "Tuesdays, Thursdays, 3:30 PM - 5:00 PM",
-            "max_participants": 10,
-            "participants": ["sarah@mergington.edu"]
-        },
-        "Drama Club": {
-            "description": "Stage productions and theatrical performances",
-            "schedule": "Wednesdays, 4:00 PM - 6:00 PM",
-            "max_participants": 25,
-            "participants": ["rachel@mergington.edu", "lucas@mergington.edu"]
-        },
-        "Art Workshop": {
-            "description": "Painting, drawing, and visual arts techniques",
-            "schedule": "Saturdays, 10:00 AM - 12:00 PM",
-            "max_participants": 18,
-            "participants": ["maya@mergington.edu"]
-        },
-        "Robotics Club": {
-            "description": "Build and program robots for competitions",
-            "schedule": "Thursdays, 4:00 PM - 5:30 PM",
-            "max_participants": 16,
-            "participants": ["alex@mergington.edu", "chris@mergington.edu"]
-        },
-        "Science Bowl": {
-            "description": "Team-based science knowledge competition",
-            "schedule": "Mondays, 3:30 PM - 4:30 PM",
-            "max_participants": 12,
-            "participants": ["jessica@mergington.edu"]
-        }
-    }
     "Chess Club": {
         "description": "Learn strategies and compete in chess tournaments",
         "schedule": "Fridays, 3:30 PM - 5:00 PM",
@@ -94,9 +38,44 @@ activities = {
         "schedule": "Mondays, Wednesdays, Fridays, 2:00 PM - 3:00 PM",
         "max_participants": 30,
         "participants": ["john@mergington.edu", "olivia@mergington.edu"]
+    },
+    "Basketball Team": {
+        "description": "Competitive basketball team for interscholastic play",
+        "schedule": "Mondays, Wednesdays, 4:00 PM - 5:30 PM",
+        "max_participants": 15,
+        "participants": ["james@mergington.edu"]
+    },
+    "Tennis Club": {
+        "description": "Recreational and competitive tennis matches",
+        "schedule": "Tuesdays, Thursdays, 3:30 PM - 5:00 PM",
+        "max_participants": 10,
+        "participants": ["sarah@mergington.edu"]
+    },
+    "Drama Club": {
+        "description": "Stage productions and theatrical performances",
+        "schedule": "Wednesdays, 4:00 PM - 6:00 PM",
+        "max_participants": 25,
+        "participants": ["rachel@mergington.edu", "lucas@mergington.edu"]
+    },
+    "Art Workshop": {
+        "description": "Painting, drawing, and visual arts techniques",
+        "schedule": "Saturdays, 10:00 AM - 12:00 PM",
+        "max_participants": 18,
+        "participants": ["maya@mergington.edu"]
+    },
+    "Robotics Club": {
+        "description": "Build and program robots for competitions",
+        "schedule": "Thursdays, 4:00 PM - 5:30 PM",
+        "max_participants": 16,
+        "participants": ["alex@mergington.edu", "chris@mergington.edu"]
+    },
+    "Science Bowl": {
+        "description": "Team-based science knowledge competition",
+        "schedule": "Mondays, 3:30 PM - 4:30 PM",
+        "max_participants": 12,
+        "participants": ["jessica@mergington.edu"]
     }
 }
-
 
 @app.get("/")
 def root():
@@ -125,6 +104,20 @@ def signup_for_activity(activity_name: str, email: str):
     # Add student
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
+
+
+@app.delete("/activities/{activity_name}/participants")
+def remove_participant(activity_name: str, email: str):
+    """Unregister a student from an activity."""
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    activity = activities[activity_name]
+    if email not in activity["participants"]:
+        raise HTTPException(status_code=404, detail="Participant not found in activity")
+
+    activity["participants"].remove(email)
+    return {"message": f"Removed {email} from {activity_name}"}
 
    
 
